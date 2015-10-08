@@ -1,0 +1,14 @@
+{
+  "name": "downstrap",
+  "version": "1.0.0",
+  "description": "strapdown with highligh.js, marked via browserify",
+  "main": "downstrap.js",
+  "dependencies": {
+    "highlight.js": "^8.8.0",
+    "marked": "^0.3.5"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "author": "bobuss",
+  "license": "ISC"
+}
