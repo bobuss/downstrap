@@ -5,8 +5,8 @@
 The ![strapdown repository](https://github.com/arturadib/strapdown) is dead. Such a shame !
 
 And I wanted
-- to switch from ![marked](http://github.com/chjj/marked) to ![markdown.js](https://github.com/evilstreak/markdown-js), for the ![Maruku](https://github.com/bhollis/maruku) dialect,
-- to switch from ![google code prettify](https://github.com/google/code-prettify) to ![highlight.js]([https://highlightjs.org/) for more languageq, and more themes,
+- to switch from ![marked](http://github.com/chjj/marked) to ![markdown-it](https://github.com/markdown-it/markdown-it),
+- to switch from ![google code prettify](https://github.com/google/code-prettify) to ![highlight.js]([https://highlightjs.org/) for more languages, and more themes,
 - to use ![browserify](http://browserify.org/) to build it,
 - to allow to load an external markdown file,
 - and to use the bootswatch themes and highlight styles served via CDN.

@@ -1,5 +1,7 @@
 var marked = function(markdown) {
-    return require('markdown').markdown.toHTML(markdown, 'Maruku');
+    var MarkdownIt = require('markdown-it'),
+        md         = new MarkdownIt({linkify: true});
+    return md.render(markdown);
 }
 var hljs = require('highlight.js');
 
