@@ -1,19 +1,105 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Downstrap = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var marked = function(markdown) {
     return require('markdown').markdown.toHTML(markdown, 'Maruku');
 }
 var hljs = require('highlight.js');
 
-// Hide body until we're done fiddling with the DOM
-document.body.style.display = 'none';
+// bootswatch themes
+var bootSwatchThemes = [
+    'cerulean',
+    'cosmo',
+    'cyborg',
+    'darkly',
+    'flatly',
+    'journal',
+    'lumen',
+    'paper',
+    'readable',
+    'sandstone',
+    'simplex',
+    'slate',
+    'spacelab',
+    'superhero',
+    'united',
+    'yeti'
+];
+
+// highlight.js themes
+var hljsThemes = [
+    'agate',
+    'androidstudio',
+    'arta',
+    'ascetic',
+    'atelier-cave.dark',
+    'atelier-cave.light',
+    'atelier-dune.dark',
+    'atelier-dune.light',
+    'atelier-estuary.dark',
+    'atelier-estuary.light',
+    'atelier-forest.dark',
+    'atelier-forest.light',
+    'atelier-heath.dark',
+    'atelier-heath.light',
+    'atelier-lakeside.dark',
+    'atelier-lakeside.light',
+    'atelier-plateau.dark',
+    'atelier-plateau.light',
+    'atelier-savanna.dark',
+    'atelier-savanna.light',
+    'atelier-seaside.dark',
+    'atelier-seaside.light',
+    'atelier-sulphurpool.dark',
+    'atelier-sulphurpool.light',
+    'brown_paper',
+    'brown_pap',
+    'codepen-embed',
+    'color-brewer',
+    'dark',
+    'darkula',
+    'default',
+    'docco',
+    'far',
+    'foundation',
+    'github-gist',
+    'github',
+    'googlecode',
+    'grayscale',
+    'hopscotch',
+    'hybrid',
+    'idea',
+    'ir_black',
+    'kimbie.dark',
+    'kimbie.light',
+    'magula',
+    'mono-blue',
+    'monokai_sublime',
+    'monokai',
+    'obsidian',
+    'paraiso.dark',
+    'paraiso.light',
+    'pojo',
+    'pojoaque',
+    'railscasts',
+    'rainbow',
+    'school_book',
+    'school_',
+    'solarized_dark',
+    'solarized_light',
+    'sunburst',
+    'tomorrow-night-blue',
+    'tomorrow-night-bright',
+    'tomorrow-night-eighties',
+    'tomorrow-night',
+    'tomorrow',
+    'vs',
+    'xcode',
+    'zenburn'
+];
 
 //////////////////////////////////////////////////////////////////////
 //
 // Shims for IE < 9
 //
-
-document.head = document.getElementsByTagName('head')[0];
-
 if (!('getElementsByClassName' in document)) {
     document.getElementsByClassName = function(name) {
         function getElementsByClassName(node, classname) {
@@ -28,40 +114,6 @@ if (!('getElementsByClassName' in document)) {
     }
 }
 
-//////////////////////////////////////////////////////////////////////
-//
-// Get user elements we need
-//
-
-var markdownEl = document.getElementsByTagName('xmp')[0] || document.getElementsByTagName('textarea')[0],
-    titleEl = document.getElementsByTagName('title')[0],
-    scriptEls = document.getElementsByTagName('script'),
-    navbarEl = document.getElementsByClassName('navbar')[0];
-
-//////////////////////////////////////////////////////////////////////
-//
-// <head> stuff
-//
-
-// Use <meta> viewport so that Bootstrap is actually responsive on mobile
-var metaEl = document.createElement('meta');
-metaEl.name = 'viewport';
-metaEl.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0';
-if (document.head.firstChild)
-    document.head.insertBefore(metaEl, document.head.firstChild);
-else
-    document.head.appendChild(metaEl);
-
-// Get origin of script
-var origin = '';
-for (var i = 0; i < scriptEls.length; i++) {
-    if (scriptEls[i].src.match('downstrap')) {
-        origin = scriptEls[i].src;
-    }
-}
-var originBase = origin.substr(0, origin.lastIndexOf('/'));
-
-
 function buildLinkNode(href) {
     var linkEl = document.createElement('link');
     linkEl.href = href;
@@ -70,172 +122,152 @@ function buildLinkNode(href) {
 }
 
 function getBootSwatchHref(theme) {
-    // bootswatch themes
-    var themes = ['cerulean', 'cosmo', 'cyborg',  'darkly', 'flatly', 'journal', 'lumen', 'paper',
-                            'readable', 'sandstone', 'simplex', 'slate', 'spacelab', 'superhero', 'united', 'yeti'];
     theme = theme.toLowerCase();
 
-    if (-1 != themes.indexOf(theme)) {
+    if (-1 != bootSwatchThemes.indexOf(theme)) {
         return 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/' + theme + '/bootstrap.min.css';
     } else {
         return 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css';
     }
 }
 
-function getHighLightJsHref(theme) {
-    // highlight.js themes
-    var themes = [
-        'agate',
-        'androidstudio',
-        'arta',
-        'ascetic',
-        'atelier-cave.dark',
-        'atelier-cave.light',
-        'atelier-dune.dark',
-        'atelier-dune.light',
-        'atelier-estuary.dark',
-        'atelier-estuary.light',
-        'atelier-forest.dark',
-        'atelier-forest.light',
-        'atelier-heath.dark',
-        'atelier-heath.light',
-        'atelier-lakeside.dark',
-        'atelier-lakeside.light',
-        'atelier-plateau.dark',
-        'atelier-plateau.light',
-        'atelier-savanna.dark',
-        'atelier-savanna.light',
-        'atelier-seaside.dark',
-        'atelier-seaside.light',
-        'atelier-sulphurpool.dark',
-        'atelier-sulphurpool.light',
-        'brown_paper',
-        'brown_pap',
-        'codepen-embed',
-        'color-brewer',
-        'dark',
-        'darkula',
-        'default',
-        'docco',
-        'far',
-        'foundation',
-        'github-gist',
-        'github',
-        'googlecode',
-        'grayscale',
-        'hopscotch',
-        'hybrid',
-        'idea',
-        'ir_black',
-        'kimbie.dark',
-        'kimbie.light',
-        'magula',
-        'mono-blue',
-        'monokai_sublime',
-        'monokai',
-        'obsidian',
-        'paraiso.dark',
-        'paraiso.light',
-        'pojo',
-        'pojoaque',
-        'railscasts',
-        'rainbow',
-        'school_book',
-        'school_',
-        'solarized_dark',
-        'solarized_light',
-        'sunburst',
-        'tomorrow-night-blue',
-        'tomorrow-night-bright',
-        'tomorrow-night-eighties',
-        'tomorrow-night',
-        'tomorrow',
-        'vs',
-        'xcode',
-        'zenburn'
-    ];
+function getHighLightJsHref(theme) {    
     theme = theme.toLowerCase();
 
-    if (-1 != themes.indexOf(theme)) {
+    if (-1 != hljsThemes.indexOf(theme)) {
         return 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/' + theme + '.min.css';
     } else {
         return 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/default.min.css';
     }
 }
 
-// Get theme
-var theme = markdownEl.getAttribute('theme');
-document.head.appendChild(
-    buildLinkNode(
-        getBootSwatchHref(theme)
-    )
-);
-
-// downstrap.css
-document.head.appendChild(
-    buildLinkNode(
-        originBase + '/downstrap.css'
-    )
-);
-
-// highlight.js theme
-theme = markdownEl.getAttribute('hljs-theme');
-document.head.appendChild(
-    buildLinkNode(
-        getHighLightJsHref(theme)
-    )
-);
-
-//////////////////////////////////////////////////////////////////////
-//
-// <body> stuff
-//
-
-var markdown = markdownEl.textContent || markdownEl.innerText;
-
-var newNode = document.createElement('div');
-newNode.className = 'container';
-newNode.id = 'content';
-document.body.replaceChild(newNode, markdownEl);
-
-// Insert navbar if there's none
-var newNode = document.createElement('div');
-newNode.className = 'navbar navbar-default navbar-fixed-top';
-if (!navbarEl && titleEl) {
-    newNode.innerHTML = '<div class="container"> <div class="navbar-header"> <a id="headline" class="navbar-brand" href="#"></a> </div> </div>';
-    document.body.insertBefore(newNode, document.body.firstChild);
-    var title = titleEl.innerHTML;
-    var headlineEl = document.getElementById('headline');
-    if (headlineEl)
-        headlineEl.innerHTML = title;
+function Downstrap(options) {
+    this.theme = options.theme || 'bootstrap';
+    this.syntaxTheme = options.syntaxTheme || 'default';
+    // Hide body until we're done fiddling with the DOM
+    document.body.style.display = 'none';
+    this.createHeadStuffs()
 }
 
-//////////////////////////////////////////////////////////////////////
-//
-// Markdown!
-//
+Downstrap.prototype.createHeadStuffs = function() {
+    var self = this;
 
-// Generate Markdown
-var html = marked(markdown);
-document.getElementById('content').innerHTML = html;
+    document.head = document.getElementsByTagName('head')[0];
 
-// highlight.js
-var codeEls = document.querySelectorAll('pre code'), i;
-for (i = 0; i < codeEls.length; ++i) {
-    var codeEl = codeEls[i];
-    var lang = codeEl.className.substr(5);
-    hljs.highlightBlock(codeEl);
+    // Get theme
+    document.head.appendChild(
+        buildLinkNode(
+            getBootSwatchHref(self.theme)
+        )
+    );
+
+    // highlight.js theme
+    document.head.appendChild(
+        buildLinkNode(
+            getHighLightJsHref(self.syntaxTheme)
+        )
+    );
+
+    var styleNode = document.createElement('style');
+    styleNode.innerHTML = 'body{padding-top: 60px;padding-bottom: 40px;font-size: 15px;line-height: 150%;}';
+    document.head.appendChild(styleNode);
+};
+
+Downstrap.prototype.attachToBody = function(url) {
+  
+    var self = this;
+
+    function createMarkup(markdown) {
+             
+        //////////////////////////////////////////////////////////////////////
+        //
+        // Get user elements we need
+        //
+        var markdownEl = document.createElement('div'),
+            titleEl    = document.getElementsByTagName('title')[0],
+            scriptEls  = document.getElementsByTagName('script'),
+            navbarEl   = document.getElementsByClassName('navbar')[0];
+
+        var newNode = document.createElement('div');
+        newNode.className = 'container';
+        newNode.id = 'content';
+        document.body.appendChild(newNode);
+
+        // Insert navbar if there's none
+        var newNode = document.createElement('div');
+        newNode.className = 'navbar navbar-default navbar-fixed-top';
+        if (!navbarEl && titleEl) {
+            var title = titleEl.innerHTML;
+            var nodeContent = '';
+            nodeContent += '<div class="container">';
+            nodeContent += '  <div class="navbar-header">';
+            nodeContent += '    <a class="navbar-brand" href="#">';
+            nodeContent += title;
+            nodeContent += '    </a>';
+            nodeContent += '  </div>';
+            nodeContent += '</div>';
+            newNode.innerHTML = nodeContent;
+            document.body.insertBefore(newNode, document.body.firstChild);
+        }
+
+        //////////////////////////////////////////////////////////////////////
+        //
+        // Markdown!
+        //
+        // Generate Markdown
+        var html = marked(markdown);
+        document.getElementById('content').innerHTML = html;
+
+        // highlight.js
+        var codeEls = document.querySelectorAll('pre code');
+        for (var i = 0; i < codeEls.length; ++i) {
+            var codeEl = codeEls[i];
+            var lang = codeEl.className.substr(5);
+            hljs.highlightBlock(codeEl);
+        }
+
+        // Style tables
+        var tableEls = document.getElementsByTagName('table');
+        for (var i = 0, ii = tableEls.length; i < ii; i++) {
+            var tableEl = tableEls[i];
+            tableEl.className = 'table table-striped table-bordered';
+        }
+
+        // All done - show body
+        document.body.style.display = '';
+    }
+
+    function getUrl(url, callback) {
+        var xmlhttp;
+
+        if (window.XMLHttpRequest) {
+            // code for IE7+, Firefox, Chrome, Opera, Safari
+            xmlhttp = new XMLHttpRequest();
+        } else {
+            // code for IE6, IE5
+            xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                if (xmlhttp.status == 200) {
+                    callback(xmlhttp.responseText);
+                }
+            }
+        }
+
+        xmlhttp.open("GET", url, true);
+        xmlhttp.send();
+    }
+
+
+    getUrl(url, function(content) {
+        createMarkup(content);
+    });
 }
 
-// Style tables
-var tableEls = document.getElementsByTagName('table');
-for (var i = 0, ii = tableEls.length; i < ii; i++) {
-    var tableEl = tableEls[i];
-    tableEl.className = 'table table-striped table-bordered';
-}
+module.exports = Downstrap;
 
-// All done - show body
-document.body.style.display = '';
 },{"highlight.js":3,"markdown":141}],2:[function(require,module,exports){
 /*
 Syntax highlighting with language autodetection.
@@ -16394,4 +16426,5 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":145,"_process":144,"inherits":143}]},{},[1]);
+},{"./support/isBuffer":145,"_process":144,"inherits":143}]},{},[1])(1)
+});

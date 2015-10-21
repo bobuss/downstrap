@@ -1,2 +1,2 @@
 all:
-	browserify main.js > downstrap.js
+	browserify main.js -s Downstrap > downstrap.js
