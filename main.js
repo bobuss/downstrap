@@ -1,4 +1,6 @@
-var marked = require('marked');
+var marked = function(markdown) {
+    return require('markdown').markdown.toHTML(markdown, 'Maruku');
+}
 var hljs = require('highlight.js');
 
 // Hide body until we're done fiddling with the DOM
@@ -58,32 +60,130 @@ for (var i = 0; i < scriptEls.length; i++) {
 }
 var originBase = origin.substr(0, origin.lastIndexOf('/'));
 
+
+function buildLinkNode(href) {
+    var linkEl = document.createElement('link');
+    linkEl.href = href;
+    linkEl.rel = 'stylesheet';
+    return linkEl;
+}
+
+function getBootSwatchHref(theme) {
+    // bootswatch themes
+    var themes = ['cerulean', 'cosmo', 'cyborg',  'darkly', 'flatly', 'journal', 'lumen', 'paper',
+                            'readable', 'sandstone', 'simplex', 'slate', 'spacelab', 'superhero', 'united', 'yeti'];
+    theme = theme.toLowerCase();
+
+    if (-1 != themes.indexOf(theme)) {
+        return 'https://maxcdn.bootstrapcdn.com/bootswatch/3.3.5/' + theme + '/bootstrap.min.css';
+    } else {
+        return 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css';
+    }
+}
+
+function getHighLightJsHref(theme) {
+    // highlight.js themes
+    var themes = [
+        'agate',
+        'androidstudio',
+        'arta',
+        'ascetic',
+        'atelier-cave.dark',
+        'atelier-cave.light',
+        'atelier-dune.dark',
+        'atelier-dune.light',
+        'atelier-estuary.dark',
+        'atelier-estuary.light',
+        'atelier-forest.dark',
+        'atelier-forest.light',
+        'atelier-heath.dark',
+        'atelier-heath.light',
+        'atelier-lakeside.dark',
+        'atelier-lakeside.light',
+        'atelier-plateau.dark',
+        'atelier-plateau.light',
+        'atelier-savanna.dark',
+        'atelier-savanna.light',
+        'atelier-seaside.dark',
+        'atelier-seaside.light',
+        'atelier-sulphurpool.dark',
+        'atelier-sulphurpool.light',
+        'brown_paper',
+        'brown_pap',
+        'codepen-embed',
+        'color-brewer',
+        'dark',
+        'darkula',
+        'default',
+        'docco',
+        'far',
+        'foundation',
+        'github-gist',
+        'github',
+        'googlecode',
+        'grayscale',
+        'hopscotch',
+        'hybrid',
+        'idea',
+        'ir_black',
+        'kimbie.dark',
+        'kimbie.light',
+        'magula',
+        'mono-blue',
+        'monokai_sublime',
+        'monokai',
+        'obsidian',
+        'paraiso.dark',
+        'paraiso.light',
+        'pojo',
+        'pojoaque',
+        'railscasts',
+        'rainbow',
+        'school_book',
+        'school_',
+        'solarized_dark',
+        'solarized_light',
+        'sunburst',
+        'tomorrow-night-blue',
+        'tomorrow-night-bright',
+        'tomorrow-night-eighties',
+        'tomorrow-night',
+        'tomorrow',
+        'vs',
+        'xcode',
+        'zenburn'
+    ];
+    theme = theme.toLowerCase();
+
+    if (-1 != themes.indexOf(theme)) {
+        return 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/' + theme + '.min.css';
+    } else {
+        return 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/default.min.css';
+    }
+}
+
 // Get theme
-var theme = markdownEl.getAttribute('theme') || 'bootstrap';
-var hljsTheme = markdownEl.getAttribute('hljs-theme') || 'default';
-theme = theme.toLowerCase();
-hljsTheme = hljsTheme.toLowerCase();
+var theme = markdownEl.getAttribute('theme');
+document.head.appendChild(
+    buildLinkNode(
+        getBootSwatchHref(theme)
+    )
+);
 
-// Stylesheets
-var linkEl = document.createElement('link');
-linkEl.href = originBase + '/themes/' + theme + '.min.css';
-linkEl.rel = 'stylesheet';
-document.head.appendChild(linkEl);
+// downstrap.css
+document.head.appendChild(
+    buildLinkNode(
+        originBase + '/downstrap.css'
+    )
+);
 
-var linkEl = document.createElement('link');
-linkEl.href = originBase + '/downstrap.css';
-linkEl.rel = 'stylesheet';
-document.head.appendChild(linkEl);
-
-var linkEl = document.createElement('link');
-linkEl.href = originBase + '/styles/' + hljsTheme + '.css';
-linkEl.rel = 'stylesheet';
-document.head.appendChild(linkEl);
-
-var linkEl = document.createElement('link');
-linkEl.href = originBase + '/themes/bootstrap-responsive.min.css';
-linkEl.rel = 'stylesheet';
-document.head.appendChild(linkEl);
+// highlight.js theme
+theme = markdownEl.getAttribute('hljs-theme');
+document.head.appendChild(
+    buildLinkNode(
+        getHighLightJsHref(theme)
+    )
+);
 
 //////////////////////////////////////////////////////////////////////
 //
@@ -99,9 +199,9 @@ document.body.replaceChild(newNode, markdownEl);
 
 // Insert navbar if there's none
 var newNode = document.createElement('div');
-newNode.className = 'navbar navbar-fixed-top';
+newNode.className = 'navbar navbar-default navbar-fixed-top';
 if (!navbarEl && titleEl) {
-    newNode.innerHTML = '<div class="navbar-inner"> <div class="container"> <div id="headline" class="brand"> </div> </div> </div>';
+    newNode.innerHTML = '<div class="container"> <div class="navbar-header"> <a id="headline" class="navbar-brand" href="#"></a> </div> </div>';
     document.body.insertBefore(newNode, document.body.firstChild);
     var title = titleEl.innerHTML;
     var headlineEl = document.getElementById('headline');
