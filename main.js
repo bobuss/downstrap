@@ -1,6 +1,7 @@
 var marked = function(markdown) {
-    var MarkdownIt = require('markdown-it'),
-        md         = new MarkdownIt({linkify: true});
+    var md = require('markdown-it')({
+        linkify: true
+    }).use(require('markdown-it-deflist'));;
     return md.render(markdown);
 }
 var hljs = require('highlight.js');
